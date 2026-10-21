@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  document-lib-microservice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: document-lib-microservice
+    restart: unless-stopped
+    ports:
+      - '5022:5022' # HTTP API / Swagger / Health
+      - '5023:5023' # TCP Microservice Transport
+    environment:
+      - APP_ENV=dev
+      - PORT=5022
+      - TCP_PORT=5023
+      - DB_TYPE=mssql
+      - DB_HOST=${DB_HOST:-host.docker.internal}
+      - DB_PORT=${DB_PORT:-1433}
+      - DB_USER=${DB_USER:-sa}
+      - DB_PASSWORD=${DB_PASSWORD:-Password@123}
+      - DB_NAME=${DB_NAME:-landtrax}
+      - REDIS_ENABLED=true
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - KAFKA_ENABLED=false
+      - KAFKA_BROKERS=kafka:9092
+      - KAFKA_CLIENT_ID=document-lib-microservice
+      - KAFKA_GROUP_ID=document-lib-consumer
+      - GATEWAY_SECRET=${GATEWAY_SECRET:-development_gateway_secret_key_landtrax_2026}
+      - APP_AUTH=${APP_AUTH:-internal_shared_secret}
+      - AWS_REGION=${AWS_REGION:-ap-southeast-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET:-landtrax-documents}
+      - CLOUD_STORAGE_PROVIDER=AWS_S3
+    depends_on:
+      - redis
+    networks:
+      - landtrax-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: document-lib-redis
+    restart: unless-stopped
+    ports:
+      - '6382:6379'
+    networks:
+      - landtrax-network
+
+networks:
+  landtrax-network:
+    driver: bridge

@@ -1,0 +1,1 @@
+export const OCR_MICROSERVICE_VERSION = '1.0.16';

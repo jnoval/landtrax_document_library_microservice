@@ -1,0 +1,76 @@
+kind:pipeline
+type: docker
+name: k8s-deploy
+
+# K8s deployment — document-lib
+# Trigger: phase2-sprint2-prod branch
+# Builds the document-lib-microservice image, pushes to the registry, then updates
+# kubemanifest/applications/document-lib/deployment.yaml via GitOps (Argo CD picks it
+# up).
+
+trigger:
+  branch:
+    - phase2-sprint2-prod
+  event:
+    - push
+    - custom
+
+steps:
+  - name: unit-tests
+    image: node:24-alpine
+    commands:
+      - npm install --no-audit --no-fund --legacy-peer-deps
+      - npm run test
+
+  - name: verify-webhook
+    image: alpine:3.22
+    commands:
+      - echo "GitHub successfully triggered Drone"
+      - echo "Building commit ${DRONE_COMMIT_SHA:0:8}"
+
+  - name: build-and-push-image
+    image: plugins/docker
+    privileged: true
+    settings:
+      registry: 15.235.164.67:5000
+      repo: 15.235.164.67:5000/document-lib-microservice
+      dockerfile: Dockerfile
+      context: .
+      tags:
+        - "${DRONE_COMMIT_SHA:0:8}"
+      insecure: true
+
+  - name: update-gitops-manifest
+    image: alpine:3.22
+    environment:
+      GITOPS_TOKEN:
+        from_secret: gitops_token
+    commands:
+      - apk add --no-cache git
+      - export IMAGE_TAG="${DRONE_COMMIT_SHA:0:8}"
+      - |
+        if [ -z "$IMAGE_TAG" ]; then
+          echo "ERROR: IMAGE_TAG is empty, refusing to update manifest"
+          exit 1
+        fi
+      - printf "machine github.com\nlogin x-access-token\npassword %s\n" "$GITOPS_TOKEN" > /root/.netrc
+      - chmod 600 /root/.netrc
+      - git clone --branch main https://github.com/jnoval/kubemanifest.git /tmp/kubemanifest
+      - cd /tmp/kubemanifest
+      - 'sed -i "s#image: 15.235.164.67:5000/document-lib-microservice:.*#image: 15.235.164.67:5000/document-lib-microservice:$IMAGE_TAG#" applications/document-lib/deployment.yaml'
+      - |
+        if ! grep -q "image: 15.235.164.67:5000/document-lib-microservice:$IMAGE_TAG$" applications/document-lib/deployment.yaml; then
+          echo "ERROR: sed failed to update image tag, manifest not changed"
+          grep image applications/document-lib/deployment.yaml
+          exit 1
+        fi
+      - |
+        if git diff --quiet -- applications/document-lib/deployment.yaml; then
+          echo "Manifest already references image tag $IMAGE_TAG"
+          exit 0
+        fi
+      - git config user.name "Drone CI"
+      - git config user.email "drone-ci@local.test"
+      - git add applications/document-lib/deployment.yaml
+      - git commit -m "Deploy document-lib $IMAGE_TAG"
+      - git push origin main
