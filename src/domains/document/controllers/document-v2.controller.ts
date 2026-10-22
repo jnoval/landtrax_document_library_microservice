@@ -11,7 +11,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import express from 'express';
 import { CommonResponse } from '../../../shared/common/response.js';
 import { AuditDescription } from '../../../shared/decorators/audit-description.decorator.js';
 import { Audit } from '../../../shared/decorators/audit.decorator.js';
@@ -113,7 +112,7 @@ export class DocumentControllerV2 {
   async downloadAllDocuments(
     @ReqContext() _req: RequestContextDto,
     @Param('transactionId') transactionId: string,
-    @Res() res: express.Response,
+    @Res() res: Response,
   ) {
     return await this._documentService.downloadAllDocumentsByTransactionService(transactionId, res);
   }
@@ -124,7 +123,7 @@ export class DocumentControllerV2 {
   async downloadAllDocumentsByTransaction(
     @ReqContext() _req: RequestContextDto,
     @Param('transactionId') transactionId: string,
-    @Res() res: express.Response,
+    @Res() res: Response,
   ) {
     return await this._documentService.downloadAllDocumentsByTransaction(transactionId, res);
   }
@@ -135,7 +134,7 @@ export class DocumentControllerV2 {
   async proxyDownload(
     @ReqContext() _req: RequestContextDto,
     @Param('documentId') documentId: string,
-    @Res() res: express.Response,
+    @Res() res: Response,
   ) {
     const document = await this._documentService.getDocument(documentId);
     if (!document) throw new NotFoundException('Document not found');
@@ -144,16 +143,16 @@ export class DocumentControllerV2 {
 
     const { buffer, contentType } = await this._s3StorageService.getFile(document.fileURL);
 
-    res.setHeader('Content-Type', contentType);
-    res.setHeader(
+    (res as unknown as {setHeader:(p1:string, p2:string)=>void})?.setHeader('Content-Type', contentType);
+    (res as unknown as {setHeader:(p1:string, p2:string)=>void})?.setHeader(
       'Content-Disposition',
       `attachment; filename="${document.originalFileName || 'file'}"`,
     );
-    res.setHeader('Content-Length', buffer.length.toString());
-    res.setHeader('Access-Control-Allow-Origin', _req?.headers?.origin || '*');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    (res as unknown as {setHeader:(p1:string, p2:string)=>void})?.setHeader('Content-Length', buffer.length.toString());
+    (res as unknown as {setHeader:(p1:string, p2:string)=>void})?.setHeader('Access-Control-Allow-Origin', _req?.headers?.origin || '*');
+    (res as unknown as {setHeader:(p1:string, p2:string)=>void})?.setHeader('Access-Control-Allow-Credentials', 'true');
 
-    res.send(buffer);
+    (res as unknown as {send:(p1:Buffer)=>void})?.send(buffer);
   }
 
   @Post()
