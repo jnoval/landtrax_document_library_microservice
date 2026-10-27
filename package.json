@@ -35,6 +35,7 @@
     "@nestjs/throttler": "^6.4.0",
     "@nestjs/typeorm": "^11.0.0",
     "archiver": "^8.0.0",
+    "axios": "^1.12.2",
     "bullmq": "^5.78.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
@@ -102,6 +103,7 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "moduleNameMapper": {
+      "^@nestjs/axios$": "<rootDir>/__mocks__/@nestjs/axios.ts",
       "^(\\.\\.?/.*)\\.js$": "$1",
       "^src/(.*)\\.js$": "<rootDir>/$1",
       "^src/(.*)$": "<rootDir>/$1"
