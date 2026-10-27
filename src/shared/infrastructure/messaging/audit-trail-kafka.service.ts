@@ -88,9 +88,14 @@ export class AuditTrailKafkaService
     result?: string;
     ip?: string;
   }): Promise<any> {
+    const normalizedUserId =
+      !dto.userId || String(dto.userId).toLowerCase() === 'system'
+        ? null
+        : dto.userId;
+
     const auditRecord = {
       id: randomUUID().toUpperCase(),
-      userId: dto.userId || null,
+      userId: normalizedUserId,
       action: dto.action,
       resource: dto.entity || 'OCR',
       area: 'Document Intelligence',
