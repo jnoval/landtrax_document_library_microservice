@@ -4,7 +4,7 @@ import { BaseEntity } from './general.entity';
 import TransactionEntity from './transaction.entity';
 import UserEntity from './user.entity';
 
-@Entity(ENTITY.REGISTRY_OF_DEED)
+@Entity(ENTITY.LOCATION)
 export default class RegistryOfDeedEntity extends BaseEntity {
   @Column({ name: 'Name', type: 'varchar', length: 255, nullable: false, unique: true })
   name!: string;

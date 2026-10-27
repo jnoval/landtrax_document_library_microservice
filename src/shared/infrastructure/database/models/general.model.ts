@@ -36,7 +36,7 @@ export enum Entities {
   REQUIREMENT = 'Requirement',
   
   LANDTRAX_ADDRESS = 'LandtraxAddress',
-  REGISTRY_OF_DEED = 'RegistryOfDeed',
+  LOCATION = 'Location',
   FAQ = 'FAQ',
 
   SERVICE = 'Service',

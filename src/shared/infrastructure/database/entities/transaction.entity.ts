@@ -1,6 +1,6 @@
-import { CollectionStatus, TransactionType, USER_TYPE } from '../../../common/app-enums.js';
-import { formatToUserDate } from '../../../../utils/date-utils.js';
 import { AfterLoad, Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { formatToUserDate } from '../../../../utils/date-utils.js';
+import { CollectionStatus, TransactionType, USER_TYPE } from '../../../common/app-enums.js';
 import { Entities } from '../models/general.model';
 import CollectionEntity from './collection.entity';
 import DocumentEntity from './document.entity';
@@ -124,8 +124,8 @@ export default class TransactionEntity extends BaseEntity {
   @Column({ name: 'DeliveryAddress', type: 'text', nullable: true })
   deliveryAddress?: string | null;
 
-  @Column({ name: 'RegistryOfDeedId', type: 'varchar', nullable: true })
-  registryOfDeedId!: string | null;
+  @Column({ name: 'LocationId', type: 'varchar', nullable: true })
+  locationId!: string | null;
 
   // TRANSCTION RELATIONSHIPS
   @OneToMany(
@@ -167,7 +167,7 @@ export default class TransactionEntity extends BaseEntity {
     onDelete: 'NO ACTION',
     onUpdate: 'CASCADE',
   }) // fk to staging (transaction status)
-  @JoinColumn({ name: 'RegistryOfDeedId', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'LocationId', referencedColumnName: 'id' })
   location?: RegistryOfDeedEntity;
 
   @OneToMany(() => DocumentEntity, (document) => document.transaction, {

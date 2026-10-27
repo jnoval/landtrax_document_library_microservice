@@ -83,8 +83,8 @@ export enum ENTITY {
   // maya checkout
   MAYA_CHECKOUT = 'MayaCheckout',
 
-  // registry of deeds
-  REGISTRY_OF_DEED = 'RegistryOfDeed',
+  // location (formerly registry of deeds)
+  LOCATION = 'Location',
 
   // system address
   LANDTRAX_ADDRESS = 'LandtraxAddress',

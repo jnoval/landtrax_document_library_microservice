@@ -1,11 +1,11 @@
-import { USER_TYPE, UserStatus } from '../../../common/app-enums.js';
-import { mainRoleTransform } from '../../../../utils/index.js';
 import { AfterLoad, Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { mainRoleTransform } from '../../../../utils/index.js';
+import { USER_TYPE, UserStatus } from '../../../common/app-enums.js';
 import { ENTITY } from '../models/general-model';
 import AuditTrailEntity from './audit-trail.entity';
 import DocumentEntity from './document.entity';
 import { LineEntity } from './general.entity';
-import RegistryOfDeedEntity from './location';
+import LocationEntity from './location';
 import TransactionEntity from './transaction.entity';
 import UserCompanyEntity from './user-company.entity';
 import UserRoleEntity from './user-role.entity';
@@ -100,8 +100,8 @@ export default class UserEntity extends LineEntity {
   @Column({ name: 'BoardResolutionUrl', type: 'text', nullable: true })
   boardResolutionUrl!: string | null;
 
-  @Column({ name: 'RegistryOfDeedId', type: 'varchar', nullable: true })
-  registryOfDeedId!: string | null;
+  @Column({ name: 'LocationId', type: 'varchar', nullable: true })
+  locationId!: string | null;
 
   @Column({ name: 'IsApproved', type: 'bit', nullable: true })
   isApproved!: boolean;
@@ -169,11 +169,11 @@ export default class UserEntity extends LineEntity {
   })
   widgets?: WidgetEntity[];
 
-  @ManyToOne(() => RegistryOfDeedEntity, (registryOfDeed) => registryOfDeed.users, {
+  @ManyToOne(() => LocationEntity, (location) => location.users, {
     eager: false,
   })
-  @JoinColumn({ name: 'RegistryOfDeedId' })
-  location?: RegistryOfDeedEntity;
+  @JoinColumn({ name: 'LocationId' })
+  location?: LocationEntity;
 
   @OneToMany(() => DocumentEntity, (document) => document.createdByUser, {
     eager: false,
