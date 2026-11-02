@@ -38,6 +38,8 @@ steps:
       context: .
       tags:
         - "${DRONE_COMMIT_SHA:0:8}"
+      build_args:
+        - GIT_COMMIT_SHA=${DRONE_COMMIT_SHA:0:8}
       insecure: true
 
   - name: update-gitops-manifest

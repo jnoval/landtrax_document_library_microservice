@@ -12,13 +12,11 @@ import redisConfig from './config/redis.config.js';
 import { DocumentModule } from './domains/document/document.module.js';
 import { S3StorageModule } from './domains/s3-storage/s3-storage.module.js';
 import { TagModule } from './domains/tag/tag.module.js';
-import { CronModule } from './shared/cron/cron.module.js';
 import { InternalHttpModule } from './shared/infrastructure/http/internal-http.module.js';
 import { AuditTrailInterceptor } from './shared/logging/audit-trail.interceptor.js';
 
 @Module({
   imports: [
-    CronModule,
     ConfigModule.forRoot({
       envFilePath: ['.env'],
       isGlobal: true,
