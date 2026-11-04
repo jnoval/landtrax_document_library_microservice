@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, Transport } from '@nestjs/microservices';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AppService } from './app.service.js';
 
@@ -27,7 +27,7 @@ export class AppController {
     return this.appService.getHealth();
   }
 
-  @MessagePattern('document-lib.version')
+  @MessagePattern('document-lib.version', Transport.TCP)
   getVersionTcp() {
     return this.appService.getVersion();
   }
